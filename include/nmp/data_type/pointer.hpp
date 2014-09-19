@@ -47,5 +47,7 @@ template <class T> struct has_data_ptr {
 
 template <class T> using has_data_ptr_t = typename has_data_ptr<T>::type;
 
+template <class T> using data_ptr_t = decltype(data_ptr(std::declval<T>()));
+
 }  // namespace nmp
 ////////////////////////////////////////////////////////////////////////////////

@@ -24,10 +24,11 @@
 namespace nmp {
 
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
-auto send(nmp::comm c, nmp::rank_t to, nmp::tag t, Message&& m) {
+auto send(nmp::comm const& c, const nmp::rank_t to, const nmp::tag t,
+          Message&& m) {
   auto s = skeleton(m);
 
-  return std::async([=]() {
+  return std::async([&]() {
     NMP_NBC(NBSEND, s.data_ptr, s.size, s.mpi_data_type, to(), t, c());
     return;
   });

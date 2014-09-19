@@ -27,7 +27,7 @@ using ::nmp::data_ptr;
 /// A message M, has:
 /// - a unit of size U,
 /// - a size (in U units), and
-/// - a pointer to its data (of type U*)
+/// - a pointer to its data (of type U* or U const*)
 ///
 /// \note if U is void, then the message size is in the unit char (bytes).
 ///
@@ -58,6 +58,36 @@ template <class M> struct message {
 namespace models {
 
 template <class M> struct message : ::nmp::concepts::message<M>::type {};
+
+}  // namespace models
+
+namespace concepts {
+
+/// A target T of message M, has:
+/// - the same unit of size M,
+/// - a _writable_ pointer to its data.
+template <class T, class M> struct target {
+  template <class T_, class M_>
+  static auto test(T_&&, M_&&, long) -> std::false_type;
+
+  template <class T_, class M_,
+            NMP_REQUIRES_(
+             models::message<T_>{}&&
+             // is writable if pointer type after removing
+             // reference is equal
+             std::is_same<data_ptr_t<T_>, std::remove_cv_t<data_ptr_t<T_>>>{}&&
+              std::is_same<unit_of_size_t<M_>, unit_of_size_t<T_>>{})>
+  static auto test(T_&&, M_&&, int) -> std::true_type;
+
+  using type = decltype(test(std::declval<T>(), std::declval<M>(), 42));
+};
+
+}  // namespace concepts
+
+namespace models {
+
+template <class T, class M>
+struct target : ::nmp::concepts::target<T, M>::type {};
 
 }  // namespace models
 

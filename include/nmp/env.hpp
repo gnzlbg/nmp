@@ -16,6 +16,7 @@
 namespace nmp {
 
 bool initialized();
+bool finalized();
 
 /// MPI Environment
 struct env {

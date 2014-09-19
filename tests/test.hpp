@@ -12,6 +12,7 @@
 #include <utility>
 #include <iostream>
 #include <nmp/detail/arithmetic_io.hpp>
+#include <nmp/comm.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 namespace nmp {
 namespace test {
@@ -53,7 +54,8 @@ template <class T> struct R {
   bool dismissed_ = false;
 
   template <class U> void oops(U const& u) const {
-    std::cerr << "> ERROR: CHECK failed \"" << expr_ << "\"\n"
+    std::cerr << "> ERROR (rank: " << ::nmp::rank() << "): CHECK failed \""
+              << expr_ << "\"\n"
               << "> \t" << filename_ << '(' << lineno_ << ')' << '\n';
     if (dismissed_)
       std::cerr << "> \tEXPECTED: " << stream(u)

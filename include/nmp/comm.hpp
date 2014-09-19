@@ -20,9 +20,9 @@ namespace nmp {
 struct comm {
   comm() : comm_id_(MPI_COMM_WORLD) {}
 
-  // copyable
-  comm(comm const&) = default;
-  comm& operator=(comm const&) = default;
+  // copyable (duplicating a communicator not implemented yet)
+  comm(comm const&) = delete;             // default;
+  comm& operator=(comm const&) = delete;  // default;
 
   // movable
   comm(comm&&) = default;
@@ -48,7 +48,7 @@ struct comm {
   }
 
   /// Communicators' underlying id
-  MPI_Comm operator()() const { return comm_id_; }
+  MPI_Comm const& operator()() const { return comm_id_; }
 
   /// Size of communicator c
   auto size() const -> rank_t {
@@ -65,7 +65,7 @@ struct comm {
 };
 
 /// Current process rank within communicator \p c
-auto rank(comm const& c) {
+auto rank(comm const& c = comm{}) {
   int rank_;
   NMP_C(MPI_Comm_rank(c(), &rank_));
   return rank_t{rank_};

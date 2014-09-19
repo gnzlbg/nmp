@@ -22,12 +22,28 @@
 namespace nmp {
 
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
-auto all_gather(nmp::comm c, Message&& m) {
+auto all_gather(nmp::comm const& c, Message&& m) {
   auto s = skeleton(m);
 
-  return std::async([=]() {
+  return std::async([&]() {
     NMP_NBC(MPI_Iallgather, MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, s.data_ptr,
             s.size, s.mpi_data_type, c());
+    return;
+  });
+}
+
+template <class Message, class Target,
+          NMP_REQUIRES_(nmp::models::message<Message>{}&&
+                         nmp::models::target<Target, Message>{})>
+auto all_gather(nmp::comm const& c, Message&& m, Target&& t) {
+  NMP_ASSERT(size(t) / size(c)() == size(m));
+
+  auto s = skeleton(m);
+  auto r = skeleton(t);
+
+  return std::async([&]() {
+    NMP_NBC(MPI_Iallgather, s.data_ptr, s.size, s.mpi_data_type, r.data_ptr,
+            r.size / size(c)(), r.mpi_data_type, c());
     return;
   });
 }
