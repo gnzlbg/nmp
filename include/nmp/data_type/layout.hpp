@@ -7,7 +7,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// \file skeleton.hpp
+/// \file layout.hpp
 ///
 /// Description
 ///
@@ -17,7 +17,7 @@ namespace nmp {
 
 namespace detail {
 
-template <class T> struct skeleton {
+template <class T> struct layout {
   int mpi_data_type;
   T* data_ptr;
   int size;
@@ -26,8 +26,8 @@ template <class T> struct skeleton {
 }  // namespace detail
 
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
-auto skeleton(Message&& m) {
-  return detail::skeleton<unit_of_size_t<Message>>{
+auto layout(Message&& m) {
+  return detail::layout<unit_of_size_t<Message>>{
    mpi_data_type(unit_of_size_t<Message>{}), data_ptr(m),
    static_cast<int>(size(m))};
 }

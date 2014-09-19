@@ -14,6 +14,6 @@
 #include <nmp/data_type/pointer.hpp>
 #include <nmp/data_type/map.hpp>
 #include <nmp/data_type/size.hpp>
-#include <nmp/data_type/skeleton.hpp>
+#include <nmp/data_type/layout.hpp>
 #include <nmp/data_type/unit_of_size.hpp>
 ////////////////////////////////////////////////////////////////////////////////

@@ -15,7 +15,7 @@
 #include <nmp/comm.hpp>
 #include <nmp/concepts.hpp>
 #include <nmp/nmp_fwd.hpp>
-#include <nmp/data_type/skeleton.hpp>
+#include <nmp/data_type/layout.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace nmp {
@@ -23,7 +23,7 @@ namespace nmp {
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
 auto recv(nmp::comm const& c, const nmp::rank_t from, const nmp::tag t,
           Message&& m) {
-  auto s = skeleton(m);
+  auto s = layout(m);
 
   return std::async([&]() {
     NMP_NBC(MPI_Irecv, s.data_ptr, s.size, s.mpi_data_type, from(), t, c());

@@ -16,14 +16,14 @@
 #include <nmp/comm.hpp>
 #include <nmp/concepts.hpp>
 #include <nmp/nmp_fwd.hpp>
-#include <nmp/data_type/skeleton.hpp>
+#include <nmp/data_type/layout.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace nmp {
 
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
 auto all_gather(nmp::comm const& c, Message&& m) {
-  auto s = skeleton(m);
+  auto s = layout(m);
 
   return std::async([&]() {
     NMP_NBC(MPI_Iallgather, MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, s.data_ptr,
@@ -38,8 +38,8 @@ template <class Message, class Target,
 auto all_gather(nmp::comm const& c, Message&& m, Target&& t) {
   NMP_ASSERT(size(t) / size(c)() == size(m));
 
-  auto s = skeleton(m);
-  auto r = skeleton(t);
+  auto s = layout(m);
+  auto r = layout(t);
 
   return std::async([&]() {
     NMP_NBC(MPI_Iallgather, s.data_ptr, s.size, s.mpi_data_type, r.data_ptr,
