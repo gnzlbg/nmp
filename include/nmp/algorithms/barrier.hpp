@@ -9,9 +9,18 @@
 ///
 /// \file barrier.hpp
 ///
-/// Description
+/// Non-blocking barrier.
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace nmp {}  // namespace nmp
+namespace nmp {
+
+auto barrier(nmp::comm const& c) {
+  return std::async([&]() {
+      NMP_NBC(MPI_Ibarrier, c());
+    return;
+  });
+}
+
+}  // namespace nmp
 ////////////////////////////////////////////////////////////////////////////////
