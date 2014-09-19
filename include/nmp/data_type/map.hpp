@@ -18,6 +18,8 @@ namespace nmp {
 namespace adl_mpi_data_type {
 
 auto mpi_data_type(char) { return MPI_CHAR; }
+auto mpi_data_type(int) { return MPI_INT; }
+auto mpi_data_type(float) { return MPI_FLOAT; }
 auto mpi_data_type(double) { return MPI_DOUBLE; }
 
 }  // namespace adl_mpi_data_type
