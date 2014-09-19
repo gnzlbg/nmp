@@ -1,0 +1,20 @@
+# Include guard
+if (__join)
+  return()
+endif ()
+set(__join YES)
+
+# Join all arguments into one string, separated by _sep, and save it to _var
+function(join _var _sep)
+  list(LENGTH ARGN _length)
+  if(${_length} EQUAL 0)
+    set(${_var} "" PARENT_SCOPE)
+    return()
+  endif()
+  list(GET ARGN 0 _tmp)
+  list(REMOVE_AT ARGN 0)
+  foreach(_item ${ARGN})
+    set(_tmp "${_tmp}${_sep}${_item}")
+  endforeach()
+  set(${_var} ${_tmp} PARENT_SCOPE)
+endfunction()
