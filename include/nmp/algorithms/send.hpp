@@ -15,6 +15,7 @@
 #include <nmp/comm.hpp>
 #include <nmp/concepts.hpp>
 #include <nmp/nmp_fwd.hpp>
+#include <nmp/data_type/skeleton.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 #define NBSEND MPI_Isend
@@ -24,15 +25,10 @@ namespace nmp {
 
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
 auto send(nmp::comm c, nmp::rank_t to, nmp::tag t, Message&& m) {
-  auto mpi_data_type_ = mpi_data_type(unit_of_size_t<Message>{});
-  auto data_ptr_ = data_ptr(m);
-  auto size_ = size(m);
+  auto s = skeleton(m);
 
   return std::async([=]() {
-    MPI_Request request;
-    NMP_C(NBSEND(data_ptr_, size_, mpi_data_type_, to(), t, c(), &request));
-    MPI_Status status;
-    NMP_C(MPI_Wait(&request, &status));
+    NMP_NBC(NBSEND, s.data_ptr, s.size, s.mpi_data_type, to(), t, c());
     return;
   });
 }

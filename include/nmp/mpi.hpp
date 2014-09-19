@@ -14,4 +14,5 @@
 #include <nmp/mpi/config.hpp>
 #define NMP_TERMINATE_ON_ERROR
 #include <nmp/mpi/call.hpp>
+#include <nmp/mpi/nb_call.hpp>
 ////////////////////////////////////////////////////////////////////////////////

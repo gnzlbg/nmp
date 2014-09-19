@@ -15,23 +15,17 @@
 #include <nmp/comm.hpp>
 #include <nmp/concepts.hpp>
 #include <nmp/nmp_fwd.hpp>
+#include <nmp/data_type/skeleton.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace nmp {
 
 template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
 auto recv(nmp::comm c, nmp::rank_t from, nmp::tag t, Message&& m) {
-  auto mpi_data_type_ = mpi_data_type(unit_of_size_t<Message>{});
-  auto data_ptr_ = data_ptr(m);
-  auto size_ = size(m);
+  auto s = skeleton(m);
 
   return std::async([=]() {
-    MPI_Request request;
-    NMP_C(
-     MPI_Irecv(data_ptr_, size_, mpi_data_type_, from(), t, c(), &request));
-    MPI_Status status;
-    NMP_C(MPI_Wait(&request, &status));
-    return;
+    NMP_NBC(MPI_Irecv, s.data_ptr, s.size, s.mpi_data_type, from(), t, c());
   });
 }
 

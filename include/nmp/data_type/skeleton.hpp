@@ -7,29 +7,29 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// \file all_gather.hpp
+/// \file skeleton.hpp
 ///
 /// Description
 ///
 ////////////////////////////////////////////////////////////////////////////////
-#include <future>
-#include <nmp/comm.hpp>
-#include <nmp/concepts.hpp>
-#include <nmp/nmp_fwd.hpp>
-#include <nmp/data_type/skeleton.hpp>
-////////////////////////////////////////////////////////////////////////////////
 
 namespace nmp {
 
-template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
-auto all_gather(nmp::comm c, Message&& m) {
-  auto s = skeleton(m);
+namespace detail {
 
-  return std::async([=]() {
-    NMP_NBC(MPI_Iallgather, MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, s.data_ptr,
-            s.size, s.mpi_data_type, c());
-    return;
-  });
+template <class T> struct skeleton {
+  int mpi_data_type;
+  T* data_ptr;
+  int size;
+};
+
+}  // namespace detail
+
+template <class Message, NMP_REQUIRES_(nmp::models::message<Message>{})>
+auto skeleton(Message&& m) {
+  return detail::skeleton<unit_of_size_t<Message>>{
+   mpi_data_type(unit_of_size_t<Message>{}), data_ptr(m),
+   static_cast<int>(size(m))};
 }
 
 }  // namespace nmp
